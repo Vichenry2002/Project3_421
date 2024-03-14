@@ -1,9 +1,14 @@
 package options;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Room {
 
@@ -27,6 +32,8 @@ public class Room {
                     // Call method to check event availability
                     listConferenceRoomAvailability(scanner, conn);
                     break;
+                case "q":
+                    return;
                 default:
                     System.out.println("Invalid choice. Please select a number from 1 to 2.");
                     break;
@@ -68,14 +75,21 @@ public class Room {
         String hotel_address = hotel_map.get(hotel_idx);
 
         String checkIn, checkOut;
-        String dateFormat = "\\d{4}-\\d{2}-\\d{2}"; // Regular expression for YYYY-MM-DD
+        LocalDate checkInDate, checkOutDate;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Define a formatter that matches your date format
+        String dateFormatRegex = "\\d{4}-\\d{2}-\\d{2}"; // Regular expression for YYYY-MM-DD
 
         // Validate check-in date
         while (true) {
             System.out.println("Insert check-in date (YYYY-MM-DD):");
             checkIn = scanner.nextLine();
-            if (checkIn.matches(dateFormat)) {
-                break; // Break the loop if the format is correct
+            if (checkIn.matches(dateFormatRegex)) {
+                try {
+                    checkInDate = LocalDate.parse(checkIn, formatter);
+                    break; // Break the loop if the format is correct and can be parsed
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+                }
             } else {
                 System.out.println("Invalid date format. Please use YYYY-MM-DD.");
             }
@@ -85,15 +99,25 @@ public class Room {
         while (true) {
             System.out.println("Insert check-out date (YYYY-MM-DD):");
             checkOut = scanner.nextLine();
-            if (checkOut.matches(dateFormat)) {
-                break; // Break the loop if the format is correct
+            if (checkOut.matches(dateFormatRegex)) {
+                try {
+                    checkOutDate = LocalDate.parse(checkOut, formatter);
+                    if (checkOutDate.isAfter(checkInDate)) {
+                        break; // Break the loop if the format is correct and check-out is after check-in
+                    } else {
+                        System.out.println("Check-out date must be after check-in date. Please enter a valid check-out date.");
+                    }
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+                }
             } else {
                 System.out.println("Invalid date format. Please use YYYY-MM-DD.");
             }
         }
-
         HashMap<Integer, Integer> available_rooms = availableRooms(hotel_address, checkIn, checkOut, conn);
+        
         System.out.println();
+        
         System.out.print("Available rooms for specified dates and location: ");
         for (Map.Entry<Integer, Integer> entry : available_rooms.entrySet()) {
             System.out.println("Room Number: " + entry.getKey() + ", Price per Night: $" + entry.getValue());
@@ -103,9 +127,69 @@ public class Room {
     }
 
     public static void listConferenceRoomAvailability(Scanner scanner, Connection conn){
+        System.out.println("Insert the number of the corresponding hotel you would like to search for availability:");
+        System.out.println("1. Cityville Central - 123 Main St, Cityville");
+        System.out.println("2. Metropolis Grand - 456 Grand Ave, Metropolis");
+        System.out.println("3. Lakeside Retreat - 789 River Rd, Lakeside");
+        System.out.println("4. Greenfield Oasis - 1010 Forest Dr, Greenfield");
+        System.out.println("5. Seaside Resort  - 1212 Coastal Way, Seaside");
+        System.out.print("Enter choice number (enter 'b' to go back): ");
+        String choice = scanner.nextLine();
+        System.out.println();
 
+        if(choice.equals("b")){
+            return;
+        }
+
+        while(!(choice.equals("1") || choice.equals("2") || choice.equals("3") || choice.equals("4") || choice.equals("5"))){
+            System.out.println("Invalid choice. Please select a number from 1 to 5. Or enter 'b' to go back");
+            choice = scanner.nextLine();
+        }
+
+        int hotel_idx = Integer.parseInt(choice);
+        HashMap<Integer, String> hotel_map = new HashMap<>();
+        hotel_map.put(1, "123 Main St, Cityville");
+        hotel_map.put(2, "456 Grand Ave, Metropolis");
+        hotel_map.put(3, "789 River Rd, Lakeside");
+        hotel_map.put(4, "1010 Forest Dr, Greenfield");
+        hotel_map.put(5, "1212 Coastal Way, Seaside");
+
+        String hotel_address = hotel_map.get(hotel_idx);
+
+        String eventDateStr;
+        String dateFormatRegex = "\\d{4}-\\d{2}-\\d{2}"; // Regular expression for YYYY-MM-DD
+
+        // Validate check-in date
+        while (true) {
+            System.out.println("Insert event date (YYYY-MM-DD):");
+            eventDateStr = scanner.nextLine();
+            if (eventDateStr.matches(dateFormatRegex)) {
+                try {
+                    break; // Break the loop if the format is correct and can be parsed
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+                }
+            } else {
+                System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+            }
+        }
+
+        
+        HashMap<Integer, List<Integer>> available_rooms = availableConfRooms(hotel_address,eventDateStr,conn);
+        
+        System.out.println();
+        
+        System.out.print("Available conference rooms for specified date and location: \n");
+        for (Map.Entry<Integer, List<Integer>> entry : available_rooms.entrySet()) {
+            
+            int roomNumber = entry.getKey();
+            int capacity = entry.getValue().get(0);
+            int pricePerHour = entry.getValue().get(1);
+            System.out.println("Room Number: " + roomNumber + ", Capacity: " + capacity + ", Price per Hour: $" + pricePerHour);
+        }
     }
 
+    //FUNCTION RETURNS HASHMAP (KEY = BEDROOM NUMBER, VAL = PRICE PER NIGHT) OF AVAILABLE BEDROOMS FOR GIVEN DATES AND LOCATION
     public static HashMap<Integer, Integer> availableRooms(String hotelAddress, String checkInDate, String checkOutDate, Connection conn) {
         HashMap<Integer, Integer> availableRooms = new HashMap<>();
 
@@ -141,6 +225,48 @@ public class Room {
 
             // The remaining rooms in allRooms are available
             availableRooms.putAll(allRooms);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return availableRooms;
+    }
+
+    //FUNCTION RETURNS HASHMAP (KEY = CONF-ROOM NUMBER, VAL = LIST WITH 1st INDEX = CAPACITY and 2nd INDEX = PRICE PER HOUR) OF AVAILABLE CONF-ROOMS FOR GIVEN DATE AND LOCATION
+    public static HashMap<Integer, List<Integer>> availableConfRooms(String hotelAddress, String eventDate, Connection conn) {
+        HashMap<Integer, List<Integer>> availableRooms = new HashMap<>();
+
+        try {
+            // Get all the conference rooms for the given hotel address
+            String sqlConfRooms = "SELECT roomnumber, capacity, priceperhour FROM conferencerooms WHERE hoteladdress = ?";
+            PreparedStatement psConfRooms = conn.prepareStatement(sqlConfRooms);
+            psConfRooms.setString(1, hotelAddress);
+            ResultSet rsConfRooms = psConfRooms.executeQuery();
+
+            // Store all conference rooms in a temporary HashMap
+            HashMap<Integer, List<Integer>> allConfRooms = new HashMap<>();
+            while (rsConfRooms.next()) {
+                List<Integer> details = new ArrayList<>();
+                details.add(rsConfRooms.getInt("capacity"));
+                details.add(rsConfRooms.getInt("priceperhour"));
+                allConfRooms.put(rsConfRooms.getInt("roomnumber"), details);
+            }
+
+            // Check for any bookings of these conference rooms on the event date
+            String sqlBookedRooms = "SELECT roomnumber FROM books WHERE hoteladdress = ? AND ? BETWEEN checkindate AND checkoutdate";
+            PreparedStatement psBookedRooms = conn.prepareStatement(sqlBookedRooms);
+            psBookedRooms.setString(1, hotelAddress);
+            psBookedRooms.setString(2, eventDate);
+            ResultSet rsBookedRooms = psBookedRooms.executeQuery();
+
+            // Remove the booked rooms from the allConfRooms HashMap
+            while (rsBookedRooms.next()) {
+                allConfRooms.remove(rsBookedRooms.getInt("roomnumber"));
+            }
+
+            // The remaining rooms in allConfRooms are available
+            availableRooms.putAll(allConfRooms);
 
         } catch (SQLException e) {
             e.printStackTrace();
