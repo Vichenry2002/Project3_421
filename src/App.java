@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 import options.Billing;
+import options.Room;
 
 public class App {
 
@@ -61,13 +62,14 @@ public class App {
             System.out.println("4. Create A New Reservation");
             System.out.println("5. Create A New Event");
             System.out.println("6. Quit");
-            System.out.print("Enter choice: ");
+            System.out.print("Enter choice number (1 to 6): ");
     
             choice = scanner.nextLine();
     
             switch (choice) {
                 case "1":
                     // Call method to check room availability
+                    Room.handleRooms(scanner, connection);
                     break;
                 case "2":
                     Billing.listBillings(scanner, connection);
@@ -88,7 +90,7 @@ public class App {
                     System.out.println("Invalid choice. Please select a number from 1 to 6.");
                     break;
             }
-        } while (choice != "6");
+        } while (!choice.equals("6"));
     
         // Close the scanner after the loop, not inside it.
         scanner.close();
