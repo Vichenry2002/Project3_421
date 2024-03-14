@@ -1,8 +1,11 @@
 import java.sql.*;
 import java.util.Scanner;
-import options.Event;;
+import options.Billing;
 
 public class App {
+
+    static Connection connection;
+
     private static Connection connect() {
         try { DriverManager.registerDriver ( new com.ibm.db2.jcc.DB2Driver() ) ; }
         catch (Exception cnfe){ System.out.println("Class not found"); }
@@ -32,7 +35,7 @@ public class App {
             System.out.println("Exiting program due to database connection failure.");
             return;
         }
-
+        connection = conn;
         invokeMenu();
 
         try {
@@ -58,23 +61,25 @@ public class App {
             System.out.println("5. Create A New Event");
             System.out.println("6. Quit");
             System.out.print("Enter choice: ");
+    
             choice = scanner.nextInt();
-
+            scanner.nextLine();
+    
             switch (choice) {
                 case 1:
-                    // Call method to check skater participation
+                    // Call method to check room availability
                     break;
                 case 2:
-                    // Call method to enroll skater in competition
+                    Billing.listBillings(scanner, connection);
                     break;
                 case 3:
-                    // Call method to cancel competition
+                    // Call method to add a new guest
                     break;
                 case 4:
-                    // Call method to add a new skater
+                    // Call method to create a new reservation
                     break;
                 case 5:
-                    String output = Event.createEvent();
+                    // Call method to create a new event
                     break;
                 case 6:
                     System.out.println("Exiting the program...");
@@ -84,9 +89,8 @@ public class App {
                     break;
             }
         } while (choice != 6);
-
+    
+        // Close the scanner after the loop, not inside it.
         scanner.close();
-
-
     }
 }
