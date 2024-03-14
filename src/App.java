@@ -52,7 +52,7 @@ public class App {
 
     public static void invokeMenu(){
         Scanner scanner = new Scanner(System.in);
-        int choice;
+        String choice;
         do {
             System.out.println("\nMain Menu:");
             System.out.println("1. Check Room Availability");
@@ -63,33 +63,32 @@ public class App {
             System.out.println("6. Quit");
             System.out.print("Enter choice: ");
     
-            choice = scanner.nextInt();
-            scanner.nextLine();
+            choice = scanner.nextLine();
     
             switch (choice) {
-                case 1:
+                case "1":
                     // Call method to check room availability
                     break;
-                case 2:
+                case "2":
                     Billing.listBillings(scanner, connection);
                     break;
-                case 3:
+                case "3":
                     // Call method to add a new guest
                     break;
-                case 4:
+                case "4":
                     // Call method to create a new reservation
                     break;
-                case 5:
+                case "5":
                     // Call method to create a new event
                     break;
-                case 6:
+                case "6":
                     System.out.println("Exiting the program...");
                     break;
                 default:
                     System.out.println("Invalid choice. Please select a number from 1 to 6.");
                     break;
             }
-        } while (choice != 6);
+        } while (choice != "6");
     
         // Close the scanner after the loop, not inside it.
         scanner.close();

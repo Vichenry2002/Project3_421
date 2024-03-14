@@ -7,10 +7,12 @@ public class Billing {
 
     public static void listBillings(Scanner scanner, Connection conn) {
         while (true) {
+            System.out.println();
             System.out.println("--- List Billings ---");
             System.out.println("Provide associated Reservation Id (enter 'q' to go back to the main menu):");
 
             String reservationIdInput = scanner.nextLine();
+            System.out.println();
             if(reservationIdInput.equalsIgnoreCase("q")){
                 break;
             }
