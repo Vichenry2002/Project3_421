@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 import options.Billing;
+import options.Guest;
 
 public class App {
 
@@ -73,7 +74,7 @@ public class App {
                     Billing.listBillings(scanner, connection);
                     break;
                 case "3":
-                    // Call method to add a new guest
+                    Guest.addGuest(scanner, connection);
                     break;
                 case "4":
                     // Call method to create a new reservation
