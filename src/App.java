@@ -61,8 +61,8 @@ public class App {
             System.out.println("\nMain Menu:");
             System.out.println("1. Check Room Availability");
             System.out.println("2. Check Guest Billings");
-            System.out.println("3. Add A New Guest");
-            System.out.println("4. Create A New Reservation");
+            System.out.println("3. Create A New Reservation");
+            System.out.println("4. Add A New Guest");
             System.out.println("5. Create A New Event");
             System.out.println("6. Quit");
             System.out.print("Enter choice number (1 to 6): ");
@@ -77,10 +77,11 @@ public class App {
                     Billing.listBillings(scanner, connection);
                     break;
                 case "3":
-                    Guest.addGuest(scanner, connection);
+                    Reservation.newReservation(scanner, connection);
                     break;
                 case "4":
-                    Reservation.newReservation(scanner, connection);
+                    Guest.addGuest(scanner, connection);
+                    
                     break;
                 case "5":
                     Event.createEvent(scanner, connection);
