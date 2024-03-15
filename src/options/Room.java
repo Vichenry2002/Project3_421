@@ -117,8 +117,8 @@ public class Room {
         HashMap<Integer, Integer> available_rooms = availableRooms(hotel_address, checkIn, checkOut, conn);
         
         System.out.println();
-        
         System.out.print("Available rooms for specified dates and location: ");
+        System.out.println();
         for (Map.Entry<Integer, Integer> entry : available_rooms.entrySet()) {
             System.out.println("Room Number: " + entry.getKey() + ", Price per Night: $" + entry.getValue());
         }
@@ -236,44 +236,37 @@ public class Room {
     //FUNCTION RETURNS HASHMAP (KEY = CONF-ROOM NUMBER, VAL = LIST WITH 1st INDEX = CAPACITY and 2nd INDEX = PRICE PER HOUR) OF AVAILABLE CONF-ROOMS FOR GIVEN DATE AND LOCATION
     public static HashMap<Integer, List<Integer>> availableConfRooms(String hotelAddress, String eventDate, Connection conn) {
         HashMap<Integer, List<Integer>> availableRooms = new HashMap<>();
+        
+        String query = "SELECT r.ROOMNUMBER, r.CAPACITY, r.PRICEPERHOUR " +
+                       "FROM conferencerooms r " +
+                       "LEFT JOIN hotelevents e ON r.ROOMNUMBER = e.ROOMNUMBER " +
+                       "AND r.HOTELADDRESS = e.HOTELADDRESS " +
+                       "AND e.EVENTDATE = ? " +
+                       "WHERE r.HOTELADDRESS = ? " +
+                       "AND e.EVENTID IS NULL;";
 
-        try {
-            // Get all the conference rooms for the given hotel address
-            String sqlConfRooms = "SELECT roomnumber, capacity, priceperhour FROM conferencerooms WHERE hoteladdress = ?";
-            PreparedStatement psConfRooms = conn.prepareStatement(sqlConfRooms);
-            psConfRooms.setString(1, hotelAddress);
-            ResultSet rsConfRooms = psConfRooms.executeQuery();
-
-            // Store all conference rooms in a temporary HashMap
-            HashMap<Integer, List<Integer>> allConfRooms = new HashMap<>();
-            while (rsConfRooms.next()) {
-                List<Integer> details = new ArrayList<>();
-                details.add(rsConfRooms.getInt("capacity"));
-                details.add(rsConfRooms.getInt("priceperhour"));
-                allConfRooms.put(rsConfRooms.getInt("roomnumber"), details);
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setDate(1, Date.valueOf(eventDate));
+            pstmt.setString(2, hotelAddress);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                int roomNumber = rs.getInt("ROOMNUMBER");
+                int capacity = rs.getInt("CAPACITY");
+                int pricePerHour = rs.getInt("PRICEPERHOUR");
+                
+                List<Integer> roomDetails = new ArrayList<>();
+                roomDetails.add(capacity);
+                roomDetails.add(pricePerHour);
+                
+                availableRooms.put(roomNumber, roomDetails);
             }
-
-            // Check for any bookings of these conference rooms on the event date
-            String sqlBookedRooms = "SELECT roomnumber FROM books WHERE hoteladdress = ? AND ? BETWEEN checkindate AND checkoutdate";
-            PreparedStatement psBookedRooms = conn.prepareStatement(sqlBookedRooms);
-            psBookedRooms.setString(1, hotelAddress);
-            psBookedRooms.setString(2, eventDate);
-            ResultSet rsBookedRooms = psBookedRooms.executeQuery();
-
-            // Remove the booked rooms from the allConfRooms HashMap
-            while (rsBookedRooms.next()) {
-                allConfRooms.remove(rsBookedRooms.getInt("roomnumber"));
-            }
-
-            // The remaining rooms in allConfRooms are available
-            availableRooms.putAll(allConfRooms);
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return availableRooms;
     }
-
 
 }
