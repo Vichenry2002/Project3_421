@@ -1,6 +1,8 @@
-## Getting Started
+## Important Note
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+We used VS Code as our IDE for this project, therefore the project contains a .vscode file, specifying where to access the db2jcc4.jar file. 
+If another IDE is used to run this project, you may need to add configurations so that the program can locate any imported libraries.
+
 
 ## Folder Structure
 
