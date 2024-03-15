@@ -14,14 +14,10 @@ public class Reservation {
         String arrivalDateStr = validateDate(scanner, "check-in");
         String checkoutDateStr = validateDate(scanner, "check-out");
         int lengthOfStay = calculateLengthOfStay(arrivalDateStr, checkoutDateStr);
-
-        // Prompt for payment information
         System.out.print("Enter payment information (*card* ending in last *4 digits*): ");
         String paymentInfo = scanner.nextLine();
-
-        // Initialize reservationId with a default or invalid value
+        
         long reservationId = -1;
-
         // Inserting reservation into database
         String sql = "INSERT INTO reservations (arrivalDate, lengthOfStay, paymentInfo) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -39,12 +35,12 @@ public class Reservation {
                 }
             } else {
                 System.out.println("Failed to add the reservation.");
-                return; // Exit if reservation creation failed
+                return;
             }
         } catch (SQLException e) {
             System.out.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
-            return; // Exit in case of SQL exception
+            return; 
         }
 
         if (reservationId != -1) {
@@ -100,7 +96,7 @@ public class Reservation {
         }
     }
 
-    private static String chooseHotel(Scanner scanner) {
+    static String chooseHotel(Scanner scanner) {
         String hotelAddress = "";
         while (true) {
             System.out.println("Select hotel address:");
@@ -130,7 +126,7 @@ public class Reservation {
             System.out.printf("Insert %s date (YYYY-MM-DD):", dateType);
             dateStr = scanner.nextLine();
             if (dateStr.matches(dateFormat)) {
-                break; // Break the loop if the format is correct
+                break; 
             } else {
                 System.out.println("Invalid date format. Please use YYYY-MM-DD.");
             }
@@ -145,4 +141,3 @@ public class Reservation {
     }
 
 }
-

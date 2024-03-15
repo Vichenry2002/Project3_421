@@ -8,14 +8,12 @@ public class Guest {
 
         System.out.print("Enter guest name: ");
         String guestName = scanner.nextLine();
-
         System.out.print("Enter guest address: ");
         String guestAddress = scanner.nextLine();
 
         int reservationId = -1;
         int roomNumber = -1;
         boolean validRoomFound = false;
-
         // Loop until a valid room is found for a given reservationId
         while (!validRoomFound) {
             System.out.print("Enter reservation ID: ");
@@ -29,10 +27,9 @@ public class Guest {
                         if (rs.next()) {
                             roomNumber = rs.getInt("roomNumber");
                             System.out.println("Room number " + roomNumber + " found for reservation ID " + reservationId);
-                            validRoomFound = true; // Stop the loop if a room is found
+                            validRoomFound = true;
                         } else {
                             System.out.println("No room found for the given reservation ID. Please try again.");
-                            // The loop will prompt for reservationId again
                         }
                     }
                 }
@@ -41,13 +38,12 @@ public class Guest {
             } catch (SQLException e) {
                 System.out.println("SQL Error when finding room number: " + e.getMessage());
                 e.printStackTrace();
-                return; // Exit the method in case of SQL error
+                return; 
             }
         }
 
         // SQL command to insert the new guest
         String sql = "INSERT INTO guests (guestName, guestAddress, roomNumber, reservationId) VALUES (?, ?, ?, ?)";
-
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // Setting the parameters for the prepared statement
             pstmt.setString(1, guestName);
@@ -55,7 +51,6 @@ public class Guest {
             pstmt.setInt(3, roomNumber);
             pstmt.setInt(4, reservationId);
 
-            // Executing the insert statement
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
                 System.out.println("Guest added successfully.");

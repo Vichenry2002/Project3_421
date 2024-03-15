@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 import options.Billing;
+import options.Event;
 import options.Guest;
 import options.Reservation;
 import options.Room;
@@ -73,7 +74,6 @@ public class App {
                     Room.handleRooms(scanner, connection);
                     break;
                 case "2":
-                    System.err.println("hello");
                     Billing.listBillings(scanner, connection);
                     break;
                 case "3":
@@ -83,7 +83,7 @@ public class App {
                     Reservation.newReservation(scanner, connection);
                     break;
                 case "5":
-                    // Call method to create a new event
+                    Event.createEvent(scanner, connection);
                     break;
                 case "6":
                     System.out.println("Exiting the program...");
