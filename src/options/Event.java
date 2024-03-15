@@ -1,6 +1,7 @@
 package options;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class Event {
             e.printStackTrace();
             return;
         }
-
+        Collections.shuffle(availableStaffIds); 
         String assignStaffSql = "INSERT INTO organizes (eventId, staffId) VALUES (?, ?)";
         try (PreparedStatement pstmtAssignStaff = conn.prepareStatement(assignStaffSql)) {
             for (int i = 0; i < numberStaffPerEvent && i < availableStaffIds.size(); i++) {
