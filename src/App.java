@@ -1,6 +1,9 @@
 import java.sql.*;
 import java.util.Scanner;
 import options.Billing;
+import options.Event;
+import options.Guest;
+import options.Reservation;
 import options.Room;
 
 public class App {
@@ -68,20 +71,19 @@ public class App {
     
             switch (choice) {
                 case "1":
-                    // Call method to check room availability
                     Room.handleRooms(scanner, connection);
                     break;
                 case "2":
                     Billing.listBillings(scanner, connection);
                     break;
                 case "3":
-                    // Call method to add a new guest
+                    Guest.addGuest(scanner, connection);
                     break;
                 case "4":
-                    // Call method to create a new reservation
+                    Reservation.newReservation(scanner, connection);
                     break;
                 case "5":
-                    // Call method to create a new event
+                    Event.createEvent(scanner, connection);
                     break;
                 case "6":
                     System.out.println("Exiting the program...");
