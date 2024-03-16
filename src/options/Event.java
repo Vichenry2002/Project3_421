@@ -55,7 +55,7 @@ public class Event {
 
         // Validate date
         while (true) {
-            System.out.println("Insert check-in date (YYYY-MM-DD):");
+            System.out.println("Insert date of the event (YYYY-MM-DD):");
             eventDate = scanner.nextLine();
             if (eventDate.matches(dateFormatRegex)) {
                 try {

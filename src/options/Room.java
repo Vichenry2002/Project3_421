@@ -169,7 +169,7 @@ public class Room {
 
         // Validate date
         while (true) {
-            System.out.println("Insert check-in date (YYYY-MM-DD):");
+            System.out.println("Insert date of the event (YYYY-MM-DD):");
             eventDateStr = scanner.nextLine();
             if (eventDateStr.matches(dateFormatRegex)) {
                 try {
