@@ -62,6 +62,9 @@ public class Room {
         while(!(choice.equals("1") || choice.equals("2") || choice.equals("3") || choice.equals("4") || choice.equals("5"))){
             System.out.println("Invalid choice. Please select a number from 1 to 5. Or enter 'b' to go back");
             choice = scanner.nextLine();
+            if(choice.equals("b")){
+                return;
+            }
         }
 
         int hotel_idx = Integer.parseInt(choice);
@@ -144,6 +147,9 @@ public class Room {
         while(!(choice.equals("1") || choice.equals("2") || choice.equals("3") || choice.equals("4") || choice.equals("5"))){
             System.out.println("Invalid choice. Please select a number from 1 to 5. Or enter 'b' to go back");
             choice = scanner.nextLine();
+            if(choice.equals("b")){
+                return;
+            }
         }
 
         int hotel_idx = Integer.parseInt(choice);
@@ -157,14 +163,17 @@ public class Room {
         String hotel_address = hotel_map.get(hotel_idx);
 
         String eventDateStr;
+        LocalDate checkDate;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Define a formatter that matches your date format
         String dateFormatRegex = "\\d{4}-\\d{2}-\\d{2}"; // Regular expression for YYYY-MM-DD
 
-        // Validate check-in date
+        // Validate date
         while (true) {
-            System.out.println("Insert event date (YYYY-MM-DD):");
+            System.out.println("Insert check-in date (YYYY-MM-DD):");
             eventDateStr = scanner.nextLine();
             if (eventDateStr.matches(dateFormatRegex)) {
                 try {
+                    checkDate = LocalDate.parse(eventDateStr, formatter);
                     break; // Break the loop if the format is correct and can be parsed
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid date format. Please use YYYY-MM-DD.");
@@ -173,10 +182,8 @@ public class Room {
                 System.out.println("Invalid date format. Please use YYYY-MM-DD.");
             }
         }
-
         
         HashMap<Integer, List<Integer>> available_rooms = availableConfRooms(hotel_address,eventDateStr,conn);
-        
         System.out.println();
         
         System.out.print("Available conference rooms for specified date and location: \n");
