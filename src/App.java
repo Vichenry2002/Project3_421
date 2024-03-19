@@ -19,8 +19,8 @@ public class App {
         String url = "jdbc:db2://winter2024-comp421.cs.mcgill.ca:50000/comp421";
 
         //REMEMBER to remove your user id and password before submitting your code!!
-        String your_userid = "cs421g52";
-        String your_password = "Team52#421";
+        String your_userid = "";
+        String your_password = "";
 
         try {
             Connection connection = DriverManager.getConnection(url, your_userid, your_password);
